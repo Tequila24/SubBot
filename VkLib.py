@@ -8,22 +8,26 @@ import json
 from pprint import pprint
 from vk_api.bot_longpoll import VkBotLongPoll
 
+
 class MyLongPoll(VkBotLongPoll):
     import vk_api
+    api = None
 
-    def SendErrorMessage(self, api: vk_api.VkApi):
-        api.method('messages.send', {'peer_id': '2000000004',
-                                     'message': "@fuego, script error detected",
-                                     'random_id': random.randrange(999999)})
+    def set_api(self, new_api: vk_api.VkApi):
+        self.api = new_api
 
+    def send_error_message(self):
+        self.api.method('messages.send', {'peer_id': '2000000004',
+                                          'message': "@fuego, script error detected",
+                                          'random_id': random.randrange(999999)})
 
     def listen(self):
         while True:
             try:
                 for event in self.check():
                     yield event
-            except:
-
+            except ConnectionError:
+                self.send_error_message()
 
 
 class VkLib:
@@ -32,7 +36,7 @@ class VkLib:
 
     def __init__(self, token: str, group_id: int):
         self.vk = vk_api.VkApi(token=token)
-        self.longpoll = self.VkBotLongPoll(self.vk, group_id)
+        self.longpoll = MyLongPoll(self.vk, group_id)
 
     def reply(self, peer_id: int, message: str):
         self.vk.method('messages.send', {'peer_id': peer_id,
@@ -85,9 +89,7 @@ class VkLib:
         reply = self.vk.method('messages.getConversations')
         json_reply = json.loads(json.dumps(reply))
         chatCount = int(json_reply['count'])
-#        chats = json_reply['items']
-#        for chat in chats
-#            print[]
+        #        chats = json_reply['items']
+        #        for chat in chats
+        #            print[]
         pprint(json_reply)
-
-

@@ -177,5 +177,5 @@ class SubBot:
 
                     #if 'добавь' in message_text and ''
             except:
-                self.VkLib.reply(testConfID, "MAN DOWN I REPEAT MAN DOWN")
-                print("LONGPOLL ERROR")
+                self.VkLib.reply(testConfID, "COMMAND HANDLING ERROR")
+                print("COMMAND HANDLING ERROR")
