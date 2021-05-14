@@ -7,6 +7,7 @@ Created on Mon May  3 16:49:24 2021
 import sqlite3
 import datetime
 
+
 class SubDB:
 
     def __init__(self, db_name: str):
@@ -26,31 +27,25 @@ class SubDB:
 
     def create_tables(self):
         # check if table with params exists
-        self.cursor.execute("""SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='sub24_params';""")
-        if self.cursor.fetchone()[0] == 0:
-            query = """CREATE TABLE sub24_params(
+        query = """CREATE TABLE IF NOT EXISTS sub24_params(
                     parameter TEXT PRIMARY KEY,
                     value TEXT);"""
-            self.cursor.execute(query)
-            self.db.commit()
+        self.cursor.execute(query)
+        self.db.commit()
 
         # check if table with chat users
-        self.cursor.execute("""SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='sub24_users';""")
-        if self.cursor.fetchone()[0] == 0:
-            query = """CREATE TABLE sub24_users(
+        query = """CREATE TABLE IF NOT EXISTS sub24_users(
                         user_id INTEGER PRIMARY KEY,
                         user_nickname TEXT);"""
-            self.cursor.execute(query)
-            self.db.commit()
+        self.cursor.execute(query)
+        self.db.commit()
 
         # check if table with pidor stats exists
-        self.cursor.execute("""SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='sub24_pidors';""")
-        if self.cursor.fetchone()[0] == 0:
-            query = """CREATE TABLE sub24_pidors(
+        query = """CREATE TABLE IF NOT EXISTS sub24_pidors(
                     user TEXT PRIMARY KEY,
                     count INT);"""
-            self.cursor.execute(query)
-            self.db.commit()
+        self.cursor.execute(query)
+        self.db.commit()
 
     def add_user(self, user_id: int, user_nickname: str):
         query: str = """INSERT OR REPLACE INTO sub24_users VALUES('{0}', '{1}');""".format(user_id, user_nickname)
@@ -75,7 +70,7 @@ class SubDB:
         if self.cursor.fetchone() is not None:
             if self.cursor.fetchone()[0] != 0:
                 user_pidor_count = self.cursor.fetchone()[1] + 1
-        else :
+        else:
             user_pidor_count = 1
         query: str = """INSERT OR REPLACE INTO sub24_pidors VALUES('{0}', '{1}');""".format(user, user_pidor_count)
         self.cursor.execute(query)
