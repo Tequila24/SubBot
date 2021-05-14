@@ -10,4 +10,9 @@ import SubBot
 if __name__ == "__main__":
     print('script working')
     bot = SubBot.SubBot()
-    bot.run()
+		while True:
+			bot.run()
+		except:
+			pass
+		else:
+			break

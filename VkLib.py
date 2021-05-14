@@ -9,6 +9,7 @@ from pprint import pprint
 from vk_api.bot_longpoll import VkBotLongPoll
 
 
+'''	
 class MyLongPoll(VkBotLongPoll):
     import vk_api
     api = None
@@ -28,7 +29,7 @@ class MyLongPoll(VkBotLongPoll):
                     yield event
             except ConnectionError:
                 self.send_error_message()
-
+'''
 
 class VkLib:
 
@@ -36,7 +37,7 @@ class VkLib:
 
     def __init__(self, token: str, group_id: int):
         self.vk = vk_api.VkApi(token=token)
-        self.longpoll = MyLongPoll(self.vk, group_id)
+        self.longpoll = VkBotLongPoll(self.vk, group_id)
 
     def reply(self, peer_id: int, message: str):
         self.vk.method('messages.send', {'peer_id': peer_id,
