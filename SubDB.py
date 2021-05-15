@@ -64,14 +64,16 @@ class SubDB:
         return users_list
 
     def add_pidor_to_base(self, user: str):
-        query: str = """SELECT * from sub24_pidors WHERE user='{0};'""".format(user)
+        query: str = """SELECT * FROM sub24_pidors WHERE user='{0}';""".format(user)
         self.cursor.execute(query)
         user_pidor_count = 0
-        if self.cursor.fetchone() is not None:
-            if self.cursor.fetchone()[0] != 0:
-                user_pidor_count = self.cursor.fetchone()[1] + 1
+        fetch = self.cursor.fetchone()
+        if fetch is not None:
+            if fetch[0] != 0:
+                user_pidor_count = fetch[1] + 1
         else:
             user_pidor_count = 1
+        print('PIDOR COUNT ' + str(user_pidor_count))
         query: str = """INSERT OR REPLACE INTO sub24_pidors VALUES('{0}', '{1}');""".format(user, user_pidor_count)
         self.cursor.execute(query)
         self.db.commit()
