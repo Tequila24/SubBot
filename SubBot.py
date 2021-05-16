@@ -94,7 +94,6 @@ class SubBot:
 
         for event in self.VkLib.longpoll.listen():
             try:
-                print(event.type)
                 if event.type == VkLib.VkBotEventType.MESSAGE_NEW:
 
                     json_event = json.loads(json.dumps(dict(event.object)))
@@ -116,7 +115,7 @@ class SubBot:
                     if 'эхо' in message_text[:3]:
                         self.echo(peer_id, message_text[3:])
 
-                    if 'живой' in message_text:
+                    if 'ты живой' in message_text:
                         self.VkLib.reply(peer_id, "Да вроде нормально")
 
                     if 'кости' in message_text:

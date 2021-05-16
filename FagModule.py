@@ -7,6 +7,7 @@ import VkLib
 import SubDB
 from datetime import datetime
 import time
+import random
 
 class FagModule:
 
@@ -39,8 +40,7 @@ class FagModule:
             self.vk_handle.reply(peer_id, "Кто-то вышел из чата, но остался в списке!")
         time.sleep(1)
         self.vk_handle.reply(peer_id, "А? Каво? Какой ещё пидор?")
-        #today_pidor = members_list[random.randrange(0, len(members_list))]
-        today_pidor = members_list[4]
+        today_pidor = members_list[random.randrange(0, len(members_list))]
         self.db_handle.add_pidor_to_base(today_pidor[1])
         self.db_handle.set_parameter("LastPidorTime", datetime.today().strftime("%Y-%m-%d"))
         self.db_handle.set_parameter("LastPidorUser", today_pidor[1])
