@@ -42,7 +42,7 @@ class SubDB:
 
 		# check if table with pidor stats exists
 		query = """CREATE TABLE IF NOT EXISTS sub24_pidors(
-					user TEXT PRIMARY KEY,
+					user INT PRIMARY KEY,
 					count INT);"""
 		self.cursor.execute(query)
 		self.db.commit()
@@ -63,7 +63,7 @@ class SubDB:
 		users_list = self.cursor.fetchall()
 		return users_list
 
-	def add_pidor_to_base(self, user: str):
+	def add_pidor_to_base(self, user: int):
 		query: str = """SELECT * FROM sub24_pidors WHERE user='{0}';""".format(user)
 		self.cursor.execute(query)
 		user_pidor_count = 0

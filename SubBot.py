@@ -35,7 +35,7 @@ class SubBot:
 		#chat_members = self.VkLib.get_chat_members(confID, self.group_id)
 		#for member_id in chat_members:
 		#    self.dBase.add_user(member_id, chat_members[member_id])
-		pprint(self.dBase.get_users_list())
+		#pprint(self.dBase.get_users_list())
 		print('I am awake')
 
 	def __exit__(self):
