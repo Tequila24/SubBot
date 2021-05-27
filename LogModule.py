@@ -26,6 +26,7 @@ class LogModule:
 		self.vk_handle.reply(peer_id, reply_message)
 
 	def reset_logs_timer(self, peer_id):
+		self.get_logs_timer(peer_id);
 		self.db_handle.set_parameter("LastLogDate", datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
 		reply_message = "Таймер логов сброшен"
 		self.vk_handle.reply(peer_id, reply_message)
