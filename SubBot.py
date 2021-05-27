@@ -32,10 +32,10 @@ class SubBot:
 		self.Faggots = FagModule(self.dBase, self.VkLib, self.group_id)
 		self.Logs = LogModule(self.dBase, self.VkLib)
 
-		#chat_members = self.VkLib.get_chat_members(confID, self.group_id)
-		#for member_id in chat_members:
-		#    self.dBase.add_user(member_id, chat_members[member_id])
-		#pprint(self.dBase.get_users_list())
+#		chat_members = self.VkLib.get_chat_members(confID, self.group_id)
+#		for member_id in chat_members:
+#			self.dBase.add_user(member_id, chat_members[member_id])
+#		pprint(self.dBase.get_users_list())
 		print('I am awake')
 
 	def __exit__(self):
@@ -93,7 +93,7 @@ class SubBot:
 	def run(self):
 
 		for event in self.VkLib.longpoll.listen():
-			#try:
+			try:
 				if event.type == VkLib.VkBotEventType.MESSAGE_NEW:
 
 					json_event = json.loads(json.dumps(dict(event.object)))
@@ -101,8 +101,8 @@ class SubBot:
 					peer_id = int(json_event['peer_id'])
 					message_text = str(json_event['text']).lower().strip()
 
-#                    if peer_id != testConfID:
-#                        continue
+#					if peer_id != testConfID:
+#						continue
 
 					is_for_me, message_text = self.check_is_for_me(message_text)
 					if not is_for_me:
@@ -133,7 +133,7 @@ class SubBot:
 					if 'топ пидоров' in message_text:
 						self.Faggots.show_pidor_stats(peer_id)
 
-#            except Exception as e:
-#                self.VkLib.reply(testConfID, "COMMAND HANDLING ERROR")
-#                print("COMMAND HANDLING ERROR")
-#                print(e)*/
+			except Exception as e:
+				self.VkLib.reply(testConfID, "COMMAND HANDLING ERROR")
+				print("COMMAND HANDLING ERROR")
+				print(e)

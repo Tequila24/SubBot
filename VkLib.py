@@ -69,7 +69,6 @@ class VkLib:
 			if member_id > 0:
 				member_domain = self.get_user_domain_by_id(json_reply['items'][i]['member_id'])
 				members[member_id] = str(member_domain)
-		pprint(members)
 		return members
 
 	def get_chat_members_count(self, peer_id: int, group_id: int):

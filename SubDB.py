@@ -73,7 +73,6 @@ class SubDB:
 				user_pidor_count = fetch[1] + 1
 		else:
 			user_pidor_count = 1
-		print('PIDOR COUNT ' + str(user_pidor_count))
 		query: str = """INSERT OR REPLACE INTO sub24_pidors VALUES('{0}', '{1}');""".format(user, user_pidor_count)
 		self.cursor.execute(query)
 		self.db.commit()

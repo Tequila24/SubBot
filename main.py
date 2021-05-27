@@ -13,7 +13,7 @@ if __name__ == "__main__":
 	while True:
 		try:
 			bot.run()
-#		except Exception as e:
-#			print("{0} FAIL".format(datetime.today().strftime("%Y-%m-%d %H:%M:%S")))
-#			print(e)
-#			continue
+		except Exception as e:
+			print("{0} FAIL".format(datetime.today().strftime("%Y-%m-%d %H:%M:%S")))
+			print(e)
+			continue
