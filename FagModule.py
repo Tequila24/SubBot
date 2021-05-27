@@ -65,7 +65,7 @@ class FagModule:
 		preheatLine = preheatLines[random.randrange(0, len(preheatLines))]
 		self.vk_handle.reply(peer_id, preheatLine)
 
-		today_pidor = members_list[0]#random.randrange(0, len(members_list))]
+		today_pidor = members_list[random.randrange(0, len(members_list))]
 		self.db_handle.add_pidor_to_base(today_pidor[0])
 		self.db_handle.set_parameter("LastPidorTime", datetime.today().strftime("%Y-%m-%d"))
 		self.db_handle.set_parameter("LastPidorUser", today_pidor[0])
