@@ -27,8 +27,6 @@ class SubBot:
 		self.VkLib = VkLib(self.token, self.group_id)
 
 		self.dBase = SubDB("Sub24Conference")
-		self.dBase.create_tables()
-
 		self.Faggots = FagModule(self.dBase, self.VkLib, self.group_id)
 		self.Logs = LogModule(self.dBase, self.VkLib)
 
@@ -130,10 +128,10 @@ class SubBot:
 							self.Logs.reset_logs_timer(peer_id)
 
 					if 'кто пидор' in message_text:
-						self.Faggots.check_today_pidor(peer_id)
+						self.Faggots.check_today_fag(peer_id)
 
 					if 'топ пидоров' in message_text:
-						self.Faggots.show_pidor_stats(peer_id)
+						self.Faggots.show_fag_stats(peer_id)
 
 			except Exception as e:
 				self.VkLib.reply(testConfID, "COMMAND HANDLING ERROR")
