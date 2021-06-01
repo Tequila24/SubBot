@@ -43,7 +43,6 @@ class FagModule:
 													("value", "TEXT") ])
 		self.db_handle.create_table("fags_players", [("user_id", "INT"),
 														("user_nickname", "TEXT")])
-		self.get_all("fags_scoreboard")
 
 	def get_param(self, param_name):
 		query = """SELECT * FROM '{0}' WHERE parameter = '{1}';""".format("fags_params", param_name)
@@ -60,6 +59,18 @@ class FagModule:
 		query: str = """SELECT * FROM '{0}'""".format(table_name)
 		db_response = self.db_handle.exc(query)
 		return db_response
+
+	def inc_fag_count_for(self, user: int):
+		query: str = """SELECT * FROM fags_scoreboard WHERE user='{0}';""".format(user)
+		response = self.db_handle.exc(query)
+		user_pidor_count = 0
+		if len(response) != 0:
+			user_pidor_count = response[0][1] + 1
+		else:
+			user_pidor_count = 1
+		query: str = """INSERT OR REPLACE INTO fags_scoreboard VALUES('{0}', '{1}');""".format(user, user_pidor_count)
+		self.db_handle.exc(query)
+		self.db_handle.com()
 
 	def check_today_fag(self, peer_id):
 		# check for cooldown
@@ -88,7 +99,7 @@ class FagModule:
 		self.vk_handle.reply(peer_id, preheatLine)
 
 		today_fag = members_list[random.randrange(0, len(members_list))]
-		self.db_handle.add_fag_to_base(today_fag[0])
+		self.inc_fag_count_for(today_fag[0])
 		self.set_param("LastFagTime", datetime.today().strftime("%Y-%m-%d"))
 		self.set_param("LastFagUser", today_fag[0])
 
