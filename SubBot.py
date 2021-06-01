@@ -12,6 +12,7 @@ from VkLib import VkLib
 from FagModule import FagModule
 from LogModule import LogModule
 from pathlib import Path
+import re
 
 creatorID = 19155229
 confID = 2000000001
@@ -65,6 +66,8 @@ class SubBot:
 				return True, message_text[5:]
 			elif 'бот' in message_text[:3]:
 				return True, message_text[3:]
+			elif 'bot' in message_text[:3]:
+				return True, message_text[3:]
 		return False, ''
 
 	def reply_help(self, peer_id: int):
@@ -72,7 +75,7 @@ class SubBot:
 		Список доступных команд:\n
 		помощь - вывести список доступных команд\n
 		эхо - повторить сообщение\n
-		кости - бросить пару игровых костей\n
+		%d\д% - бросить кости в стиле 1d20, где 1 - количество костей, 20 - количество граней. Максимумальные значения - 999\n
 		логи таймер - показать время с последних логов\n
 		логи сброс - сбросить дату последних логов на текущую\n
 		кто пидор - показать пидора на сегодня\n
@@ -82,13 +85,20 @@ class SubBot:
 
 	def echo(self, peer_id: int, message: str):
 		self.VkLib.reply(peer_id, '>' + message.strip())
+				
+	def reply_dice(self, peer_id: int, author_id: int, dices_amount, dice_value):
+		if ( (dices_amount<1) or (dice_value<2) ):
+			self.VkLib.reply(peer_id, "Количество костей должно быть больше 0, а значение - больше 1")
+			return
 
-	def reply_with_dice(self, peer_id: int, author_id: int):
-		dice1 = random.randrange(1, 6)
-		dice2 = random.randrange(1, 6)
-		reply_text = '@{0} {1} {2}'.format(self.VkLib.get_user_domain_by_id(author_id), dices[dice1], dices[dice2])
+		if ( (dices_amount>999) or (dice_value>999) ):
+			self.VkLib.reply(peer_id, "превышен лимит")
+			return
+
+		reply_text = "@{0} ".format(self.VkLib.get_user_domain_by_id(author_id))		
+		for i in range(dices_amount):
+			reply_text += " " + str(random.randrange(1, dice_value+1))
 		self.VkLib.reply(peer_id, reply_text)
-
 
 	def run(self):
 
@@ -115,11 +125,14 @@ class SubBot:
 					if 'эхо' in message_text[:3]:
 						self.echo(peer_id, message_text[3:])
 
-					if 'ты живой' in message_text:
-						self.VkLib.reply(peer_id, "Да вроде нормально")
+					if 'статус' in message_text:
+						self.VkLib.reply(peer_id, "Lock'd and loaded, ready to roll")
 
-					if 'кости' in message_text:
-						self.reply_with_dice(peer_id, author_id)
+					match = re.match(r'(-?\d+)[DdДд](-?\d+)', message_text)
+					if (match):
+						dices_amount = int(match.group(1))
+						dice_value = int(match.group(2))
+						self.reply_dice(peer_id, author_id, dices_amount, dice_value)
 
 					if 'логи' in message_text:
 						if 'таймер' in message_text:

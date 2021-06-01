@@ -44,6 +44,14 @@ class VkLib:
 										 'message': message,
 										 'random_id': random.randrange(999999)})
 
+# This is not working at all, server error #10
+# but Ill leave that here just in case
+	def reply_to_msg(self, peer_id: int, reply_to_id: int, message: str):
+		self.vk.method('messages.send', {'peer_id': peer_id,
+										 'message': message,
+										 'reply_to': reply_to_id,
+										 'random_id': random.randrange(999999)})
+
 	def get_user_domain_by_id(self, user_id: int):
 		reply = self.vk.method('users.get', {'user_ids': user_id,
 											 'fields': 'domain'})
