@@ -113,14 +113,14 @@ class FagModule:
 
 	def show_fag_stats(self, peer_id):
 		reply: str = ''
-		fags_list = self.get_all("fags_scoreboard")
+		fags_list: dict = dict(self.get_all("fags_scoreboard"))
 		if len(fags_list) == 0:
 			reply = "А не было у нас ещё пидоров! Хаха!"
 		else:
-			fags_list.sort
+			fags_list = sorted(fags_list.items() , key=lambda x: x[1], reverse=True)		# I like your funny words, magic lambda man
 			self.vk_handle.reply(peer_id, сountLines[random.randrange(0, len(сountLines))] )
 			for fag in fags_list:
 				fag_name = self.vk_handle.get_user_domain_by_id(fag[0])
 				reply += "{0} - {1} \r\n".format(fag_name, fag[1])
-
 		self.vk_handle.reply(peer_id, reply)
+
