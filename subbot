@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [[ $# != 1 ]]
+  then
+    echo -e "\033[1;33m Available arguments: start | stop | restart | status\033[0m"
+  exit 1
+fi
+
+echo -e "\033[1;33m"
+
+if [[ $1 == "start" ]]
+  then
+    (nohup python3 /home/subbot/vkbot.py 2>/home/subbot/stdout.txt &)
+    echo -e "started"
+elif [[ $1 == "stop" ]]
+  then
+    pkill -e -9 -f vkbot.py
+    echo -e "stopped"
+elif [[ $1 == "restart" ]]
+  then
+    pkill -e -9 -f vkbot.py
+    sleep 0.5
+    (nohup python3 /home/subbot/vkbot.py 2>/home/subbot/stdout.txt &)
+    echo -e "restarted"
+elif [[ $1 == "status" ]]
+  then
+    ps aux | grep vkbot.py
+else
+  echo -e "\033[1;31m" 
+  echo -e "wrong command"
+fi
+
+echo -e "\033[0m"
+
+exit 1
