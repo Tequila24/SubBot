@@ -92,17 +92,17 @@ class FagModule:
 				return
 
 		current_member_count: int = self.vk_handle.get_chat_members_count(peer_id, self.bot_group_id)
-		members_list = self.get_all("fags_players")
-		if current_member_count > len(members_list):
+		players_list = self.get_all("fags_players")
+		if current_member_count > len(players_list):
 			self.vk_handle.reply(peer_id, "В списке пидоров кого-то не хватает!")
-		elif current_member_count < len(members_list):
+		elif current_member_count < len(players_list):
 			self.vk_handle.reply(peer_id, "Кто-то вышел из чата, но остался в списке!")
 		time.sleep(1)
 
 		preheatLine = preheatLines[random.randrange(0, len(preheatLines))]
 		self.vk_handle.reply(peer_id, preheatLine)
 
-		today_fag = members_list[random.randrange(0, len(members_list))]
+		today_fag = players_list[random.randrange(0, len(players_list))]
 		self.inc_fag_count_for(today_fag[0])
 		self.set_param("LastFagTime", datetime.today().strftime("%Y-%m-%d"))
 		self.set_param("LastFagUser", today_fag[0])
@@ -119,8 +119,14 @@ class FagModule:
 		else:
 			fags_list = sorted(fags_list.items() , key=lambda x: x[1], reverse=True)		# I like your funny words, magic lambda man
 			self.vk_handle.reply(peer_id, сountLines[random.randrange(0, len(сountLines))] )
+			players_list = dict(self.get_all("fags_players"))
 			for fag in fags_list:
-				fag_name = self.vk_handle.get_user_domain_by_id(fag[0])
+				fag_name = ""
+				if int(fag[0]) in players_list.keys():
+					fag_name = players_list[int(fag[0])]
+				else:
+					fag_name = self.vk_handle.get_user_domain_by_id(fag[0])
 				reply += "{0} - {1} \r\n".format(fag_name, fag[1])
+		print(reply)
 		self.vk_handle.reply(peer_id, reply)
 
