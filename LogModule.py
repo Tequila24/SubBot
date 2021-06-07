@@ -15,9 +15,6 @@ class LogModule:
 		self.db_handle.create_table("logs_params", [	("parameter", "TEXT"),
 														("value", "TEXT") ])
 
-		self.set_param("test_param", "test_value")
-		print (self.get_param("test_param"))
-
 	def get_param(self, param_name):
 		query = """SELECT * FROM '{0}' WHERE parameter = '{1}';""".format("logs_params", param_name)
 		db_response = self.db_handle.exc(query)
