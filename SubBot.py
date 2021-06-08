@@ -11,6 +11,7 @@ from SubDB import SubDB
 from VkLib import VkLib
 from FagModule import FagModule
 from LogModule import LogModule
+from HistoryModule import HistoryModule
 from pathlib import Path
 import re
 
@@ -30,6 +31,7 @@ class SubBot:
 		self.dBase = SubDB("Sub24Conference")
 		self.Faggots = FagModule(self.dBase, self.VkLib, self.group_id)
 		self.Logs = LogModule(self.dBase, self.VkLib)
+		self.history = HistoryModule(self.dBase, self.VkLib)
 
 #		chat_members = self.VkLib.get_chat_members(confID, self.group_id)
 #		for member_id in chat_members:
@@ -107,9 +109,15 @@ class SubBot:
 				if event.type == VkLib.VkBotEventType.MESSAGE_NEW:
 
 					json_event = json.loads(json.dumps(dict(event.object)))
+
+					message_id = int(json_event['conversation_message_id'])
 					author_id = int(json_event['from_id'])
+					message_epoch_date = int(json_event['date'])
 					peer_id = int(json_event['peer_id'])
 					message_text = str(json_event['text']).lower().strip()
+
+					#pprint(json_event)
+					self.history.save_message(message_id, author_id, message_epoch_date, message_text)
 
 #					if peer_id != testConfID:
 #						continue
@@ -150,3 +158,4 @@ class SubBot:
 				self.VkLib.reply(testConfID, "COMMAND HANDLING ERROR")
 				print("COMMAND HANDLING ERROR")
 				print(e)
+				continue
