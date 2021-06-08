@@ -6,6 +6,7 @@
 import VkLib
 import SubDB
 from datetime import datetime
+from pprint import pprint
 
 class HistoryModule:
 
@@ -27,3 +28,8 @@ class HistoryModule:
 		self.db_handle.exc(query)
 		self.db_handle.com()
 		#print("{0} {1}\n{2}\n{3}".format(message_id, author_id, formatted_message_date, message_text))
+
+	def get_last_n_messages(self, messages_amount: int):
+		query = """SELECT * FROM 'messages_history' WHERE message_id BETWEEN ((SELECT MAX(message_id) FROM 'messages_history') - {0}) AND (SELECT MAX(message_id) FROM 'messages_history');""".format(messages_amount)
+		result = self.db_handle.exc(query)
+		pprint(result)
