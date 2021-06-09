@@ -39,8 +39,8 @@ class SubDB:
 		self.cursor.execute(query_full)
 		self.db.commit()
 
-	def exc(self, query: str):
-		self.cursor.execute(query)
+	def exc(self, query: str, values: tuple = ()):
+		self.cursor.execute(query, values)
 		return self.cursor.fetchall()
 
 	def com(self):
