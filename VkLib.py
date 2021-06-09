@@ -39,9 +39,10 @@ class VkLib:
 		self.vk = vk_api.VkApi(token=token)
 		self.longpoll = VkBotLongPoll(self.vk, group_id)
 
-	def reply(self, peer_id: int, message: str):
+	def reply(self, peer_id: int, message: str, disable_mention: bool = True):
 		self.vk.method('messages.send', {'peer_id': peer_id,
 										 'message': message,
+										 'disable_mentions': 1 if disable_mention else 0,
 										 'random_id': random.randrange(999999)})
 
 # This is not working at all, server error #10
