@@ -82,6 +82,7 @@ class SubBot:
 		логи сброс - сбросить дату последних логов на текущую\n
 		кто пидор - показать пидора на сегодня\n
 		топ пидоров - показать таблицу лидеров-пидеров\n
+		архив последние N - показать последние N(1-50) сообщений из архива
 		'''
 		self.VkLib.reply(peer_id, message_text)
 
@@ -145,6 +146,11 @@ class SubBot:
 							self.Logs.get_logs_timer(peer_id)
 						if 'сброс' in message_text:
 							self.Logs.reset_logs_timer(peer_id)
+
+					if 'архив' in message_text:
+						match = re.match(r'архив последние ([1-9]{1}[0-9]*)', message_text)
+						if (match):
+							self.history.get_last_n_messages(peer_id, int(match.group(1)))
 
 					if 'кто пидор' in message_text:
 						self.Faggots.check_today_fag(peer_id)
