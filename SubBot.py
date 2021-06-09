@@ -117,10 +117,8 @@ class SubBot:
 					message_text = str(json_event['text']).lower().strip()
 
 					#pprint(json_event)
-					self.history.save_message(message_id, author_id, message_epoch_date, message_text)
-
-#					if peer_id != testConfID:
-#						continue
+					if peer_id == confID:
+						self.history.save_message(message_id, author_id, message_epoch_date, message_text)
 
 					is_for_me, message_text = self.check_is_for_me(message_text)
 					if not is_for_me:
