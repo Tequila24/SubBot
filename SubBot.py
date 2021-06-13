@@ -5,8 +5,6 @@
 
 import random
 import json
-from pprint import pprint
-from datetime import datetime
 from SubDB import SubDB
 from VkLib import VkLib
 from FagModule import FagModule
@@ -20,6 +18,7 @@ confID = 2000000001
 testConfID = 2000000004
 
 dices = {1: '①', 2: '②', 3: '③', 4: '④', 5: '⑤', 6: '⑥'}
+
 
 class SubBot:
 
@@ -77,7 +76,7 @@ class SubBot:
 		Список доступных команд:\n
 		помощь - вывести список доступных команд\n
 		эхо - повторить сообщение\n
-		%d\д% - бросить кости в стиле 1d20, где 1 - количество костей, 20 - количество граней. Максимальные значения - 999\n
+		%dд% - бросить кости в стиле 1d20, где 1 - количество костей, 20 - количество граней. Максимальные значения - 999\n
 		логи таймер - показать время с последних логов\n
 		логи сброс - сбросить дату последних логов на текущую\n
 		кто пидор - показать пидора на сегодня\n
@@ -90,11 +89,11 @@ class SubBot:
 		self.VkLib.reply(peer_id, '>' + message.strip())
 				
 	def reply_dice(self, peer_id: int, author_id: int, dices_amount, dice_value):
-		if ( (dices_amount<1) or (dice_value<2) ):
+		if (dices_amount < 1) or (dice_value < 2):
 			self.VkLib.reply(peer_id, "Количество костей должно быть больше 0, а значение - больше 1")
 			return
 
-		if ( (dices_amount>999) or (dice_value>999) ):
+		if (dices_amount > 999) or (dice_value > 999):
 			self.VkLib.reply(peer_id, "превышен лимит")
 			return
 
@@ -136,7 +135,7 @@ class SubBot:
 						self.VkLib.reply(peer_id, "Lock'd and loaded, ready to roll")
 
 					match = re.match(r'(-?\d+)[DdДд](-?\d+)', message_text)
-					if (match):
+					if match:
 						dices_amount = int(match.group(1))
 						dice_value = int(match.group(2))
 						self.reply_dice(peer_id, author_id, dices_amount, dice_value)
@@ -149,7 +148,7 @@ class SubBot:
 
 					if 'архив' in message_text:
 						match = re.match(r'архив последние ([1-9]{1}[0-9]*)', message_text)
-						if (match):
+						if match:
 							self.history.get_last_n_messages(peer_id, int(match.group(1)))
 
 					if 'кто пидор' in message_text:
