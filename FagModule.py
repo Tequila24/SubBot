@@ -10,7 +10,7 @@ import time
 import random
 
 
-preheatLines = [	"Время пришло ( ͡° ͜ʖ ͡°)",
+preheat_lines = [	"Время пришло ( ͡° ͜ʖ ͡°)",
 					"The time has come and so have I",
 					"И не надоело вам?",
 					"Нормальные люди спят в это время вообще-то",
@@ -18,7 +18,7 @@ preheatLines = [	"Время пришло ( ͡° ͜ʖ ͡°)",
 					"Вскрываем ящик Пандоры...",
 					"Я здесь что б жвачку жевать и пидоров назначать, а жвачка у меня кончилась"	]
 
-nominationLines = [	"Герой-пидор сегодняшнего дня @{0}",
+nomination_lines = [	"Герой-пидор сегодняшнего дня @{0}",
 					"Правом, данным мне свыше, объявляю пидором дня @{0}!",
 					"Ну и пидор же ты, @{0}",
 					"Кто это такой красивый у нас? @{0}!",
@@ -27,7 +27,7 @@ nominationLines = [	"Герой-пидор сегодняшнего дня @{0}"
 					"@{0}, представитель вида faggot vulgaris",
 					"Отринь свою гетеросексуальность, @{0}!"	]
 
-сountLines = [		"Минуточку, надо посчитать...",
+countLines = [		"Минуточку, надо посчитать...",
 					"Так... этот один раз, тут два.. так падажжи ёмана",
 					"А ВОТ ОНИ",
 					"В э фильме снимались",
@@ -52,12 +52,12 @@ class FagModule:
 		query = """SELECT * FROM '{0}' WHERE parameter = '{1}';""".format("fags_params", param_name)
 		db_response = self.db_handle.exc(query)
 		param_name, value = db_response[0]
-		return value;
+		return value
 
 	def set_param(self, param_name: str, param_value: str):
 		query = """INSERT OR REPLACE INTO '{0}' VALUES('{1}', '{2}');""".format("fags_params", param_name, param_value)
 		self.db_handle.exc(query)
-		self.db_handle.com();
+		self.db_handle.com()
 		
 	def get_all(self, table_name: str):
 		query: str = """SELECT * FROM '{0}'""".format(table_name)
@@ -67,7 +67,7 @@ class FagModule:
 	def inc_fag_count_for(self, user: int):
 		query: str = """SELECT * FROM fags_scoreboard WHERE user='{0}';""".format(user)
 		response = self.db_handle.exc(query)
-		user_pidor_count = 0
+		user_pidor_count: int
 		if len(response) != 0:
 			user_pidor_count = response[0][1] + 1
 		else:
@@ -82,7 +82,7 @@ class FagModule:
 		if last_fag_time != 0:
 			time_ago_in_secs: int = int((datetime.today() - datetime.strptime(last_fag_time, "%Y-%m-%d")).total_seconds())
 			hours_ago: int = time_ago_in_secs // 3600
-			if (hours_ago < 24):
+			if hours_ago < 24:
 				time_left = 24 - hours_ago
 				last_fag_user_id: int = self.get_param("LastFagUser")
 				reply = "Если мне не изменяет память, пидор сегодня - {0}, и останется им ещё {1} часов".format(
@@ -99,16 +99,16 @@ class FagModule:
 			self.vk_handle.reply(peer_id, "Кто-то вышел из чата, но остался в списке!")
 		time.sleep(1)
 
-		preheatLine = preheatLines[random.randrange(0, len(preheatLines))]
-		self.vk_handle.reply(peer_id, preheatLine)
+		preheat_line = preheat_lines[random.randrange(0, len(preheat_lines))]
+		self.vk_handle.reply(peer_id, preheat_line)
 
 		today_fag = players_list[random.randrange(0, len(players_list))]
 		self.inc_fag_count_for(today_fag[0])
 		self.set_param("LastFagTime", datetime.today().strftime("%Y-%m-%d"))
 		self.set_param("LastFagUser", today_fag[0])
 
-		nominationLine = nominationLines[ random.randrange(0, len(nominationLines)) ]
-		fag_reply = nominationLine.format(today_fag[1])
+		nomination_line = nomination_lines[random.randrange(0, len(nomination_lines))]
+		fag_reply = nomination_line.format(today_fag[1])
 		self.vk_handle.reply(peer_id, fag_reply)
 
 	def show_fag_stats(self, peer_id):
@@ -117,16 +117,16 @@ class FagModule:
 		if len(fags_list) == 0:
 			reply = "А не было у нас ещё пидоров! Хаха!"
 		else:
-			fags_list = sorted(fags_list.items() , key=lambda x: x[1], reverse=True)		# I like your funny words, magic lambda man
-			self.vk_handle.reply(peer_id, сountLines[random.randrange(0, len(сountLines))] )
+			fags_list = dict(sorted(fags_list.items(), key=lambda x: x[1], reverse=True))		# I like your funny words, magic lambda man
+			print(fags_list)
+			self.vk_handle.reply(peer_id, countLines[random.randrange(0, len(countLines))] )
 			players_list = dict(self.get_all("fags_players"))
-			for fag in fags_list:
-				fag_name = ""
-				if int(fag[0]) in players_list.keys():
-					fag_name = players_list[int(fag[0])]
+			for fag in fags_list.keys():
+				fag_name: str
+				if int(fag) in players_list.keys():
+					fag_name = players_list[int(fag)]
 				else:
-					fag_name = self.vk_handle.get_user_domain_by_id(fag[0])
-				reply += "{0} - {1} \r\n".format(fag_name, fag[1])
+					fag_name = self.vk_handle.get_user_domain_by_id(fag)
+				reply += "{0} - {1} \r\n".format(fag_name, fags_list[fag])
 		print(reply)
 		self.vk_handle.reply(peer_id, reply)
-

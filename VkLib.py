@@ -31,6 +31,7 @@ class MyLongPoll(VkBotLongPoll):
 				self.send_error_message()
 '''
 
+
 class VkLib:
 
 	from vk_api.bot_longpoll import VkBotEventType
@@ -97,7 +98,7 @@ class VkLib:
 	def get_chats(self):
 		reply = self.vk.method('messages.getConversations')
 		json_reply = json.loads(json.dumps(reply))
-		chatCount = int(json_reply['count'])
+		chat_count = int(json_reply['count'])
 		#        chats = json_reply['items']
 		#        for chat in chats
 		#            print[]

@@ -6,7 +6,7 @@
 import VkLib
 import SubDB
 from datetime import datetime
-from pprint import pprint
+
 
 class HistoryModule:
 
@@ -25,18 +25,16 @@ class HistoryModule:
 		#print("{0} {1}\n{2}\n{3}".format(message_id, author_id, formatted_message_date, message_text))
 
 	def get_last_n_messages(self, peer_id: int, messages_amount: int):
-		if (messages_amount > 50):
+		if messages_amount > 50:
 			self.vk_handle.reply(peer_id, "Максимальное количество сообщений из истории - 50")
 			return
 
 		query = """SELECT * FROM (SELECT * FROM 'messages_history' ORDER BY message_id DESC LIMIT {0}) ORDER BY message_id ASC;""".format(messages_amount)
 		result = self.db_handle.exc(query)
-		if (len(result)):
+		if len(result):
 			reply: str = ''
 			for line in result:
 				reply += "\n@id{0} {1} \n{2}\n".format(line[1], line[2], line[3])
 			self.vk_handle.reply(peer_id, reply)
 		else:
 			print("История пуста!")
-
-
