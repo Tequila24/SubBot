@@ -91,17 +91,21 @@ class FagModule:
 				self.vk_handle.reply(peer_id, reply)
 				return
 
+		# we can not count members as usual anymore
+		'''
 		current_member_count: int = self.vk_handle.get_chat_members_count(peer_id, self.bot_group_id)
 		players_list = self.get_all("fags_players")
 		if current_member_count > len(players_list):
 			self.vk_handle.reply(peer_id, "В списке пидоров кого-то не хватает!")
 		elif current_member_count < len(players_list):
 			self.vk_handle.reply(peer_id, "Кто-то вышел из чата, но остался в списке!")
-		time.sleep(1)
+		'''
 
 		preheat_line = preheat_lines[random.randrange(0, len(preheat_lines))]
 		self.vk_handle.reply(peer_id, preheat_line)
+		time.sleep(1)
 
+		players_list = self.get_all("fags_players")
 		today_fag = players_list[random.randrange(0, len(players_list))]
 		self.inc_fag_count_for(today_fag[0])
 		self.set_param("LastFagTime", datetime.today().strftime("%Y-%m-%d"))
