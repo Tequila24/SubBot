@@ -108,6 +108,7 @@ class FagModule:
 		time.sleep(1)
 
 		players_list = self.get_all("fags_players")
+		random.shuffle(players_list)
 		today_fag = players_list[random.randrange(0, len(players_list))]
 		self.modify_fag_count_for(today_fag[0], 1)
 		self.set_param("LastFagTime", datetime.today().strftime("%Y-%m-%d"))
