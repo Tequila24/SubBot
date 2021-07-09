@@ -4,14 +4,14 @@
 """
 
 import VkLib
-import SubDB
+from SubDB import SubDB
 from datetime import datetime
 
 
 class HistoryModule:
 
-	def __init__(self, new_db_handle: SubDB, new_vk_handle: VkLib):
-		self.db_handle = new_db_handle
+	def __init__(self, new_vk_handle: VkLib):
+		self.db_handle = SubDB("sub24_messages")
 		self.vk_handle = new_vk_handle
 		self.db_handle.create_table("messages_history", [	("message_id", "INTEGER"),
 															("author_id", "INTEGER"),

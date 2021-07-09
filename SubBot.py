@@ -27,10 +27,10 @@ class SubBot:
 
 		self.VkLib = VkLib(self.token, self.group_id)
 
-		self.dBase = SubDB("Sub24Conference")
+		self.dBase = SubDB("sub24_conference")
 		self.Faggots = FagModule(self.dBase, self.VkLib, self.group_id)
 		self.Logs = LogModule(self.dBase, self.VkLib)
-		self.history = HistoryModule(self.dBase, self.VkLib)
+		self.history = HistoryModule(self.VkLib)
 
 #		chat_members = self.VkLib.get_chat_members(confID, self.group_id)
 #		for member_id in chat_members:
