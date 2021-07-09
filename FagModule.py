@@ -64,27 +64,29 @@ class FagModule:
 		db_response = self.db_handle.exc(query)
 		return db_response
 
-	def inc_fag_count_for(self, user: int):
+	def modify_fag_count_for(self, user: int, modify_by: int):
 		query: str = """SELECT * FROM fags_scoreboard WHERE user='{0}';""".format(user)
 		response = self.db_handle.exc(query)
 		user_pidor_count: int
 		if len(response) != 0:
-			user_pidor_count = response[0][1] + 1
+			user_pidor_count = response[0][1] + modify_by
 		else:
-			user_pidor_count = 1
+			return
 		query: str = """INSERT OR REPLACE INTO fags_scoreboard VALUES('{0}', '{1}');""".format(user, user_pidor_count)
 		self.db_handle.exc(query)
 		self.db_handle.com()
 
 	def check_today_fag(self, peer_id):
+		# check if faggot was already chosen today
+		last_fag_user_id: int = int(self.get_param("LastFagUser"))
+		
 		# check for cooldown
 		last_fag_time: str = self.get_param("LastFagTime")
 		if last_fag_time != 0:
 			time_ago_in_secs: int = int((datetime.today() - datetime.strptime(last_fag_time, "%Y-%m-%d")).total_seconds())
 			hours_ago: int = time_ago_in_secs // 3600
-			if hours_ago < 24:
+			if (hours_ago < 24) and (last_fag_user_id != -1):	# faggot was resetted manually
 				time_left = 24 - hours_ago
-				last_fag_user_id: int = self.get_param("LastFagUser")
 				reply = "Если мне не изменяет память, пидор сегодня - {0}, и останется им ещё {1} часов".format(
 					self.vk_handle.get_user_domain_by_id(last_fag_user_id),
 					time_left)
@@ -107,7 +109,7 @@ class FagModule:
 
 		players_list = self.get_all("fags_players")
 		today_fag = players_list[random.randrange(0, len(players_list))]
-		self.inc_fag_count_for(today_fag[0])
+		self.modify_fag_count_for(today_fag[0], 1)
 		self.set_param("LastFagTime", datetime.today().strftime("%Y-%m-%d"))
 		self.set_param("LastFagUser", today_fag[0])
 
@@ -134,3 +136,12 @@ class FagModule:
 				reply += "{0} - {1} \r\n".format(fag_name, fags_list[fag])
 		print(reply)
 		self.vk_handle.reply(peer_id, reply)
+
+	def reset_today_faggot(self, peer_id):
+		last_fag_user_id: int = self.get_param("LastFagUser")
+		if last_fag_user_id == 0:
+			self.vk_handle.reply(peer_id, "Пидора ещё не выбирали!")
+		else:
+			self.set_param("LastFagUser", -1)
+			self.modify_fag_count_for(last_fag_user_id, -1)
+			self.vk_handle.reply(peer_id, "Пидор сброшен с Олимпа, счётчик снижен на 1")

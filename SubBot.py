@@ -11,6 +11,8 @@ from FagModule import FagModule
 from LogModule import LogModule
 from HistoryModule import HistoryModule
 from pathlib import Path
+from datetime import datetime
+import traceback
 import re
 
 creatorID = 19155229
@@ -157,8 +159,13 @@ class SubBot:
 					if 'топ пидоров' in message_text:
 						self.Faggots.show_fag_stats(peer_id)
 
+					if 'сброс пидора' in message_text:
+						self.Faggots.reset_today_faggot(peer_id)
+
 			except Exception as e:
 				self.VkLib.reply(testConfID, "COMMAND HANDLING ERROR")
 				print("COMMAND HANDLING ERROR")
+				print("{0} FAIL".format(datetime.today().strftime("%Y-%m-%d %H:%M:%S")))
 				print(e)
+				traceback.print_exc()
 				continue
