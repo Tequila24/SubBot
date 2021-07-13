@@ -26,16 +26,16 @@ class ReminderModule:
 		reminder_text: str = ""
 		reminder_id, hours, minutes, seconds = 0, 0, 0, 0
 
-		match = re.search(r',? напомни(?: мне)? (.+) через', reminder_raw_text)
+		match = re.search(r'напомни(?: мне)? (.+) через', reminder_raw_text)
 		if match:
 			reminder_text = str(match.group(1))
 		match = re.search(r'(\d+) час(?:ов?|а?)', reminder_raw_text)
 		if match:
 			hours = int(match.group(1))
-		match = re.search(r'(\d+) минут(?:ы?|у?)', reminder_raw_text)
+		match = re.search(r'(\d+) минуты*у*', reminder_raw_text)
 		if match:
 			minutes = int(match.group(1))
-		match = re.search(r'(\d+) секунд(?:ы?|у?)', reminder_raw_text)
+		match = re.search(r'(\d+) секунды*у*', reminder_raw_text)
 		if match:
 			seconds = int(match.group(1))
 
