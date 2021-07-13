@@ -17,10 +17,10 @@ class SubDB:
 
 	def __exit__(self, exc_type, exc_value, traceback):
 		print('dbClosed')
-		self.db.cursor.close()
+		self.db.cursor().close()
 
 	def open_db(self, db_name: str):
-		self.db = sqlite3.connect(db_name + '.db')
+		self.db = sqlite3.connect(db_name + '.db', check_same_thread=False)
 		self.cursor = self.db.cursor()
 		self.isInit = True
 
