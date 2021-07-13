@@ -29,10 +29,10 @@ class HistoryModule:
 			self.vk_handle.reply(peer_id, "Максимальное количество сообщений из истории - 50")
 			return
 
-		query = """SELECT * FROM (SELECT * FROM 'messages_history' ORDER BY message_id DESC LIMIT {0}) ORDER BY message_id ASC;""".format(messages_amount)
-		result = self.db_handle.exc(query)
+		result = self.db_handle.exc("""SELECT * FROM 'messages_history' ORDER BY message_id DESC LIMIT (?);""", (messages_amount, ))
 		if len(result):
 			reply: str = ''
+			result.reverse()
 			for line in result:
 				reply += "\n@id{0} {1} \n{2}\n".format(line[1], line[2], line[3])
 			self.vk_handle.reply(peer_id, reply)
