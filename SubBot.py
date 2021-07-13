@@ -165,7 +165,7 @@ class SubBot(threading.Thread):
 						if 'сброс пидора' in message_text:
 							self.Faggots.reset_today_faggot(peer_id)
 
-						match = re.match(r'напомни(?: мне)? (.+) через', message_text)
+						match = re.search(r',? напомни(?: мне)? (.+) через', message_text)
 						if match:
 							self.reminderModule.create_reminder(peer_id, author_id, message_text)
 
