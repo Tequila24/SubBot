@@ -152,7 +152,7 @@ class SubBot(threading.Thread):
 								self.Logs.reset_logs_timer(peer_id)
 
 						if 'архив' in message_text:
-							match = re.match(r'архив последние ([1-9]{1}[0-9]*)', message_text)
+							match = re.match(r'архив последние ([1-9][0-9]*)', message_text)
 							if match:
 								self.history.get_last_n_messages(peer_id, int(match.group(1)))
 
@@ -171,14 +171,14 @@ class SubBot(threading.Thread):
 
 						match = re.match(r'удали напоминалку (\d+)', message_text)
 						if match:
-							self.reminderModule.remove_reminder(peer_id, author_id, match.group(1))
+							self.reminderModule.remove_reminder(peer_id, author_id, int(match.group(1)))
 
 						if 'мои напоминалки' in message_text:
 							self.reminderModule.get_reminders_for_user(peer_id, author_id)
 
 						if 'упади' in message_text:
 							self.VkLib.reply(peer_id, "падаю")
-							exec(type((lambda:0).__code__)(0,1,0,0,0,b'',(),(),(),'','',1,b''))
+							exec(type((lambda: 0).__code__)(0, 1, 0, 0, 0, b'', (), (), (), '', '', 1, b''))
 
 			except Exception as e:
 				self.VkLib.reply(testConfID, "COMMAND HANDLING ERROR")

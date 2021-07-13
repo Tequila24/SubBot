@@ -85,7 +85,7 @@ class FagModule:
 		if last_fag_time != 0:
 			time_ago_in_secs: int = int((datetime.today() - datetime.strptime(last_fag_time, "%Y-%m-%d")).total_seconds())
 			hours_ago: int = time_ago_in_secs // 3600
-			if (hours_ago < 24) and (last_fag_user_id != -1):	# faggot was resetted manually
+			if (hours_ago < 24) and (last_fag_user_id != -1):  # faggot was resetted manually
 				time_left = 24 - hours_ago
 				reply = "Если мне не изменяет память, пидор сегодня - {0}, и останется им ещё {1} часов".format(
 					self.vk_handle.get_user_domain_by_id(last_fag_user_id),
@@ -143,6 +143,6 @@ class FagModule:
 		if last_fag_user_id == 0:
 			self.vk_handle.reply(peer_id, "Пидора ещё не выбирали!")
 		else:
-			self.set_param("LastFagUser", -1)
+			self.set_param("LastFagUser", str(-1))
 			self.modify_fag_count_for(last_fag_user_id, -1)
 			self.vk_handle.reply(peer_id, "Пидор сброшен с Олимпа, счётчик снижен на 1")
