@@ -29,14 +29,15 @@ class ReminderModule:
 		if 'через' in reminder_raw:
 			match = re.search(r'напомни (?:мне )?((?!мне ).+) через (?:(\d+) час(?:ов?|а?) ?)?(?:(\d+) минуты*у* ?)?(?:(\d+) секунды*у* ?)?', reminder_raw)
 			if match:
-				reminder_text = match.group(1)
-				expiration_date = (datetime.now() + timedelta(0,
-															  int(match.group(4)) if match.group(4) is not None else 0,
-															  0,
-															  0,
-															  int(match.group(3)) if match.group(3) is not None else 0,
-															  int(match.group(2)) if match.group(2) is not None else 0,
-															  0) ).strftime("%Y-%m-%d %H:%M:%S")
+				if match.group(1) is not None:
+					reminder_text = match.group(1)
+					expiration_date = (datetime.now() + timedelta(0,
+																  int(match.group(4)) if match.group(4) is not None else 0,
+																  0,
+																  0,
+																  int(match.group(3)) if match.group(3) is not None else 0,
+																  int(match.group(2)) if match.group(2) is not None else 0,
+																  0) ).strftime("%Y-%m-%d %H:%M:%S")
 		else:
 			match = re.search(r'напомни (?:мне )?((?!мне ).+) (\d{4})?-?(\d{1,2})-(\d{1,2}) ?(?:в )?(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?', reminder_raw)
 			if match:
@@ -92,10 +93,12 @@ class ReminderModule:
 		response = self.dbase.exc("""SELECT * FROM 'reminders'""")
 		if len(response):
 			for line in response:
-				t_delta: float = (datetime.strptime(line[1], "%Y-%m-%d %H:%M:%S") - datetime.now()).total_seconds()
-				#print(t_delta, line[0], line[1], line[2], line[3], line[4])
-				if t_delta < 0.0:
-					message: str = "@{0}, напоминаю: {1}".format(self.vk_handle.get_user_domain_by_id(line[2]), line[3])
-					self.vk_handle.reply(line[4], message, False)
-					self.dbase.exc("""DELETE FROM 'reminders' WHERE id=(?);""", (line[0], ))
-					self.dbase.com()
+				try:
+					t_delta: float = (datetime.strptime(line[1], "%Y-%m-%d %H:%M:%S") - datetime.now()).total_seconds()
+					if t_delta < 0.0:
+						message: str = "@{0}, напоминаю: {1}".format(self.vk_handle.get_user_domain_by_id(line[2]), line[3])
+						self.vk_handle.reply(line[4], message, False)
+						self.dbase.exc("""DELETE FROM 'reminders' WHERE id=(?);""", (line[0], ))
+						self.dbase.com()
+				except Exception as e:
+					self.dbase.exc("""DELETE FROM 'reminders' WHERE id=(?);""", (line[0],))
