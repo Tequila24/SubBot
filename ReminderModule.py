@@ -8,6 +8,7 @@ from SubDB import SubDB
 import re
 from datetime import datetime, timedelta
 from pprint import pprint
+import typing
 
 
 class ReminderModule:
@@ -21,25 +22,38 @@ class ReminderModule:
 												("text", "TEXT"),
 												("chat_id", "INTEGER") ])
 
-	def create_reminder(self, peer_id: int, author_id: int, reminder_raw_text: str):
-		
+	def parse_reminder_command(self, reminder_raw: str) -> typing.Tuple[str, str]:
+		expiration_date: str = ""
 		reminder_text: str = ""
-		reminder_id, hours, minutes, seconds = 0, 0, 0, 0
 
-		match = re.search(r'напомни(?: мне)? (.+) через', reminder_raw_text)
-		if match:
-			reminder_text = str(match.group(1))
-		match = re.search(r'(\d+) час(?:ов?|а?)', reminder_raw_text)
-		if match:
-			hours = int(match.group(1))
-		match = re.search(r'(\d+) минуты*у*', reminder_raw_text)
-		if match:
-			minutes = int(match.group(1))
-		match = re.search(r'(\d+) секунды*у*', reminder_raw_text)
-		if match:
-			seconds = int(match.group(1))
+		if 'через' in reminder_raw:
+			match = re.search(r'напомни (?:мне )?((?!мне ).+) через (?:(\d+) час(?:ов?|а?) ?)?(?:(\d+) минуты*у* ?)?(?:(\d+) секунды*у* ?)?', reminder_raw)
+			if match:
+				reminder_text = match.group(1)
+				expiration_date = (datetime.now() + timedelta(0,
+															  int(match.group(4)) if match.group(4) is not None else 0,
+															  0,
+															  0,
+															  int(match.group(3)) if match.group(3) is not None else 0,
+															  int(match.group(2)) if match.group(2) is not None else 0,
+															  0) ).strftime("%Y-%m-%d %H:%M:%S")
+		else:
+			match = re.search(r'напомни (?:мне )?((?!мне ).+) (\d{4})?-?(\d{1,2})-(\d{1,2}) ?(?:в )?(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?', reminder_raw)
+			if match:
+				reminder_text = match.group(1)
+				expiration_date = "{0}-{1}-{2} {3}:{4}:{5}".format(	match.group(2) if match.group(2) is not None else datetime.now().year,
+																	match.group(3) if match.group(3) is not None else datetime.now().month,
+																	match.group(4) if match.group(4) is not None else datetime.now().day,
+																	match.group(5) if match.group(5) is not None else 10,
+																	match.group(6) if match.group(6) is not None else 0,
+																	match.group(7) if match.group(7) is not None else 0 )
+		return expiration_date, reminder_text
 
-		expiration_date = (datetime.today() + timedelta(0, seconds, 0, 0, minutes, hours, 0)).strftime("%Y-%m-%d %H:%M:%S")
+	def create_reminder(self, peer_id: int, author_id: int, reminder_raw: str):
+
+		expiration_date, reminder_text = self.parse_reminder_command(reminder_raw)
+
+		print(expiration_date, reminder_text)
 
 		response = (self.dbase.exc("SELECT MAX(id) FROM reminders"))[0]
 		if response[0] is not None:

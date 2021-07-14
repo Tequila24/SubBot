@@ -60,14 +60,9 @@ class SubBot(threading.Thread):
 
 	def check_is_for_me(self, message_text: str):
 		if len(message_text) > 5:
-			if 'sub24' in message_text[:5]:
-				return True, message_text[5:]
-			elif 'суб24' in message_text[:5]:
-				return True, message_text[5:]
-			elif 'бот' in message_text[:3]:
-				return True, message_text[3:]
-			elif 'bot' in message_text[:3]:
-				return True, message_text[3:]
+			match = re.match(r'((?:(?:бот)|(?:bot)|(?:sub24)|(?:суб24)),? ?)', message_text[:6].lower())
+			if match:
+				return True, message_text[len(match.group(1)):]
 		return False, ''
 
 	def reply_help(self, peer_id: int):
@@ -75,13 +70,14 @@ class SubBot(threading.Thread):
 		Список доступных команд:\n
 		помощь - вывести список доступных команд\n
 		эхо - повторить сообщение\n
-		%dд% - бросить кости в стиле 1d20, где 1 - количество костей, 20 - количество граней. Максимальные значения - 999\n
+		%d\д% - бросить кости в стиле 1d20, где 1 - количество костей, 20 - количество граней. Максимальные значения - 999\n
 		логи таймер - показать время с последних логов\n
 		логи сброс - сбросить дату последних логов на текущую\n
 		кто пидор - показать пидора на сегодня\n
 		топ пидоров - показать таблицу лидеров-пидеров\n
 		архив последние N - показать последние N(1-50) сообщений из архива\n
-		напомни (мне) %текст% через %часов %минут %секунд - Напоминалка с пингом! Например: "напомни попить чаю через 30 минут"\n
+		напомни (мне) %текст% через %часов %минут %секунд - Напоминалка с пингом! Например: "напомни попить чаю через 30 минут"
+		другой формат - напомни (мне) %текст %год-%месяц-%день %час-%минута-%секунда. Если время не будет указано, напомнит в 10:00:00  \n
 		мои напоминалки - вывести список ваших напоминалок\n
 		удали напоминалку %n% - удалить напоминалку под номером N\n
 		'''
@@ -119,7 +115,7 @@ class SubBot(threading.Thread):
 						author_id = int(json_event['from_id'])
 						message_epoch_date = int(json_event['date'])
 						peer_id = int(json_event['peer_id'])
-						message_text = str(json_event['text']).lower().strip()
+						message_text = str(json_event['text']).strip()
 
 						#pprint(json_event)
 						if peer_id == confID:
@@ -165,11 +161,10 @@ class SubBot(threading.Thread):
 						if 'сброс пидора' in message_text:
 							self.Faggots.reset_today_faggot(peer_id)
 
-						match = re.search(r'напомни(?: мне)? (.+) через', message_text)
+						match = re.search(r'напомни(?: мне)? (.+)', message_text)
 						if match:
 							self.reminderModule.create_reminder(peer_id, author_id, message_text)
 
-						print(message_text)
 						match = re.match(r'удали напоминалку (\d+)', message_text)
 						if match:
 							self.reminderModule.remove_reminder(peer_id, author_id, int(match.group(1)))
