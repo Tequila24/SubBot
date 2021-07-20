@@ -26,28 +26,68 @@ class ReminderModule:
 		expiration_date: str = ""
 		reminder_text: str = ""
 
-		if 'через' in reminder_raw:
-			match = re.search(r'напомни (?:мне )?((?!мне ).+) через (?:(\d+) час(?:ов?|а?) ?)?(?:(\d+) минуты*у* ?)?(?:(\d+) секунды*у* ?)?', reminder_raw)
-			if match:
-				if match.group(1) is not None:
-					reminder_text = match.group(1)
-					expiration_date = (datetime.now() + timedelta(0,
-																  int(match.group(4)) if match.group(4) is not None else 0,
-																  0,
-																  0,
-																  int(match.group(3)) if match.group(3) is not None else 0,
-																  int(match.group(2)) if match.group(2) is not None else 0,
-																  0) ).strftime("%Y-%m-%d %H:%M:%S")
+		match = re.match(r'(напомни (?:мне )?)', reminder_raw)
+		if match:
+			reminder_raw = reminder_raw[len(match.group(1)):].strip()
+
+		match = re.match(r'(.+) через', reminder_raw)
+		if match:
+			reminder_text = match.group(1)
+
+			match2 = re.search(r'через (?:(\d+) час(?:ов?|а?) ?)?(?:(\d+) минуты*у* ?)?(?:(\d+) секунды*у* ?)?', reminder_raw)
+			if match2:
+				expiration_date = (datetime.now() + timedelta(0,
+															  int(match2.group(3)) if match2.group(3) is not None else 0,
+															  0,
+															  0,
+															  int(match2.group(2)) if match2.group(2) is not None else 0,
+															  int(match2.group(1)) if match2.group(1) is not None else 0,
+															  0) ).strftime("%Y-%m-%d %H:%M:%S")
 		else:
-			match = re.search(r'напомни (?:мне )?((?!мне ).+) (\d{4})?-?(\d{1,2})-(\d{1,2}) ?(?:в )?(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?', reminder_raw)
+
+			year: str = str(datetime.now().year)
+			month: str = ""
+			day: str = ""
+			hour: str = "10"
+			minute: str = "0"
+			second: str = "0"
+
+			# REMINDER TEXT
+			match = re.search(r'(.+) \d+[-.]\d+', reminder_raw)
 			if match:
+				print(match.groups())
 				reminder_text = match.group(1)
-				expiration_date = "{0}-{1}-{2} {3}:{4}:{5}".format(	match.group(2) if match.group(2) is not None else datetime.now().year,
-																	match.group(3) if match.group(3) is not None else datetime.now().month,
-																	match.group(4) if match.group(4) is not None else datetime.now().day,
-																	match.group(5) if match.group(5) is not None else 10,
-																	match.group(6) if match.group(6) is not None else 0,
-																	match.group(7) if match.group(7) is not None else 0 )
+
+			# DATE DD-MM | DD.MM
+			match = re.search(r'(\d{1,2})[-.](\d{1,2})[^.]', reminder_raw)
+			if match:
+				year = str(datetime.now().year)
+				month = match.group(2)
+				day = match.group(1)
+
+			# DATE YYYY-MM-DD | YYYY.MM.DD
+			match = re.search(r'(\d{4})[-.](\d{1,2})[-.](\d{1,2})', reminder_raw)
+			if match:
+				year = match.group(1)
+				month = match.group(2)
+				day = match.group(3)
+
+			# DATE DD-MM-YYYY | DD.MM.YYYY
+			match = re.search(r'(\d{1,2})[-.](\d{1,2})[-.](\d{4})', reminder_raw)
+			if match:
+				year = match.group(3)
+				month = match.group(2)
+				day = match.group(1)
+
+			# TIME HH:MM:SS
+			match = re.search(r'в (\d{1,2}):?(\d{1,2})?:?(\d{1,2})?', reminder_raw)
+			if match:
+				hour = match.group(1)
+				minute = match.group(2) if match.group(2) is not None else 0
+				second = match.group(3) if match.group(3) is not None else 0
+
+			expiration_date = "{0}-{1}-{2} {3}:{4}:{5}".format(	year, month, day, hour, minute, second)
+
 		return expiration_date, reminder_text
 
 	def create_reminder(self, peer_id: int, author_id: int, reminder_raw: str):
@@ -67,7 +107,6 @@ class ReminderModule:
 
 	def remove_reminder(self, peer_id: int, author_id: int, reminder_id: int):
 		response = self.dbase.exc("""SELECT * FROM 'reminders' WHERE id=(?);""", (reminder_id, ))
-		print(response)
 		if len(response):
 			if int(response[0][2]) == author_id:
 				self.dbase.exc("""DELETE FROM 'reminders' WHERE id=(?);""", (reminder_id, ))
@@ -101,4 +140,6 @@ class ReminderModule:
 						self.dbase.exc("""DELETE FROM 'reminders' WHERE id=(?);""", (line[0], ))
 						self.dbase.com()
 				except Exception as e:
+					self.vk_handle.reply(2000000004, "удалена напоминалка: " + str(line))
 					self.dbase.exc("""DELETE FROM 'reminders' WHERE id=(?);""", (line[0],))
+					self.dbase.com()

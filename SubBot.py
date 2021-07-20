@@ -107,78 +107,85 @@ class SubBot(threading.Thread):
 		while True:
 			try:
 				for event in self.VkLib.longpoll.listen():
-					if event.type == VkLib.VkBotEventType.MESSAGE_NEW:
 
-						json_event = json.loads(json.dumps(dict(event.object)))
+					try:
+						if event.type == VkLib.VkBotEventType.MESSAGE_NEW:
 
-						message_id = int(json_event['conversation_message_id'])
-						author_id = int(json_event['from_id'])
-						message_epoch_date = int(json_event['date'])
-						peer_id = int(json_event['peer_id'])
-						message_text = str(json_event['text']).strip()
+							json_event = json.loads(json.dumps(dict(event.object)))
 
-						#pprint(json_event)
-						if peer_id == confID:
-							self.history.save_message(message_id, author_id, message_epoch_date, message_text)
+							message_id = int(json_event['conversation_message_id'])
+							author_id = int(json_event['from_id'])
+							message_epoch_date = int(json_event['date'])
+							peer_id = int(json_event['peer_id'])
+							message_text = str(json_event['text']).strip()
 
-						is_for_me, message_text = self.check_is_for_me(message_text)
-						if not is_for_me:
-							continue
-						message_text = message_text.strip()
+							#pprint(json_event)
+							if peer_id == confID:
+								self.history.save_message(message_id, author_id, message_epoch_date, message_text)
 
-						if 'помощь' in message_text:
-							self.reply_help(peer_id)
+							is_for_me, message_text = self.check_is_for_me(message_text)
+							if not is_for_me:
+								continue
+							message_text = message_text.strip()
 
-						if 'эхо' in message_text[:3]:
-							self.echo(peer_id, message_text[3:])
+							if 'помощь' in message_text:
+								self.reply_help(peer_id)
 
-						if 'статус' in message_text:
-							self.VkLib.reply(peer_id, "Lock'd and loaded, ready to roll")
+							if 'эхо' in message_text[:3]:
+								self.echo(peer_id, message_text[3:])
 
-						match = re.match(r'(-?\d+)[DdДд](-?\d+)', message_text)
-						if match:
-							dices_amount = int(match.group(1))
-							dice_value = int(match.group(2))
-							self.reply_dice(peer_id, author_id, dices_amount, dice_value)
+							if 'статус' in message_text:
+								self.VkLib.reply(peer_id, "Lock'd and loaded, ready to roll")
 
-						if 'логи' in message_text:
-							if 'таймер' in message_text:
-								self.Logs.get_logs_timer(peer_id)
-							if 'сброс' in message_text:
-								self.Logs.reset_logs_timer(peer_id)
-
-						if 'архив' in message_text:
-							match = re.match(r'архив последние ([1-9][0-9]*)', message_text)
+							match = re.match(r'(-?\d+)[DdДд](-?\d+)', message_text)
 							if match:
-								self.history.get_last_n_messages(peer_id, int(match.group(1)))
+								dices_amount = int(match.group(1))
+								dice_value = int(match.group(2))
+								self.reply_dice(peer_id, author_id, dices_amount, dice_value)
 
-						if 'кто пидор' in message_text:
-							self.Faggots.check_today_fag(peer_id)
+							if 'логи' in message_text:
+								if 'таймер' in message_text:
+									self.Logs.get_logs_timer(peer_id)
+								if 'сброс' in message_text:
+									self.Logs.reset_logs_timer(peer_id)
 
-						if 'топ пидоров' in message_text:
-							self.Faggots.show_fag_stats(peer_id)
+							if 'архив' in message_text:
+								match = re.match(r'архив последние ([1-9][0-9]*)', message_text)
+								if match:
+									self.history.get_last_n_messages(peer_id, int(match.group(1)))
 
-						if 'сброс пидора' in message_text:
-							self.Faggots.reset_today_faggot(peer_id)
+							if 'кто пидор' in message_text:
+								self.Faggots.check_today_fag(peer_id)
 
-						match = re.search(r'напомни(?: мне)? (.+)', message_text)
-						if match:
-							self.reminderModule.create_reminder(peer_id, author_id, message_text)
+							if 'топ пидоров' in message_text:
+								self.Faggots.show_fag_stats(peer_id)
 
-						match = re.match(r'удали напоминалку (\d+)', message_text)
-						if match:
-							self.reminderModule.remove_reminder(peer_id, author_id, int(match.group(1)))
+							if 'сброс пидора' in message_text:
+								self.Faggots.reset_today_faggot(peer_id)
 
-						if 'мои напоминалки' in message_text:
-							self.reminderModule.get_reminders_for_user(peer_id, author_id)
+							match = re.search(r'напомни(?: мне)? (.+)', message_text)
+							if match:
+								self.reminderModule.create_reminder(peer_id, author_id, message_text)
 
-						if 'упади' in message_text:
-							self.VkLib.reply(peer_id, "падаю")
-							exec(type((lambda: 0).__code__)(0, 1, 0, 0, 0, b'', (), (), (), '', '', 1, b''))
+							match = re.match(r'удали напоминалку (\d+)', message_text)
+							if match:
+								self.reminderModule.remove_reminder(peer_id, author_id, int(match.group(1)))
+
+							if 'мои напоминалки' in message_text:
+								self.reminderModule.get_reminders_for_user(peer_id, author_id)
+
+							if 'упади' in message_text:
+								self.VkLib.reply(peer_id, "падаю")
+								exec(type((lambda: 0).__code__)(0, 1, 0, 0, 0, b'', (), (), (), '', '', 1, b''))
+
+					except Exception as e:
+						self.VkLib.reply(testConfID, "COMMAND HANDLING ERROR")
+						print("{0} FAIL".format(datetime.today().strftime("%Y-%m-%d %H:%M:%S")))
+						traceback.print_exc()
+						continue
 
 			except Exception as e:
-				self.VkLib.reply(testConfID, "COMMAND HANDLING ERROR")
-				print("COMMAND HANDLING ERROR")
+				print("VK FAILURE")
 				print("{0} FAIL".format(datetime.today().strftime("%Y-%m-%d %H:%M:%S")))
 				traceback.print_exc()
 				continue
