@@ -47,7 +47,7 @@ class VkLib:
 										 'message': message,
 										 'disable_mentions': 1 if disable_mention else 0,
 										 'random_id': random.randrange(999999),
-										 'attachment': ','.join(attachments)})
+										 'attachment': (','.join(attachments)) if attachments is not None else []} )
 
 	def upload_pic_to_chat(self, peer_id, photo_path: str):
 		response = self.vk_uploader.photo_messages(photo_path, peer_id=peer_id)
