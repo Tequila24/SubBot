@@ -262,3 +262,6 @@ Thumbs.db
 .idea/SubBot.iml
 .idea/vcs.xml
 settings.txt
+
+
+/rsc/*
