@@ -11,6 +11,7 @@ from FagModule import FagModule
 from LogModule import LogModule
 from HistoryModule import HistoryModule
 from ReminderModule import ReminderModule
+from AutoMemer import AutoMemer
 from pathlib import Path
 from datetime import datetime
 import traceback
@@ -36,6 +37,7 @@ class SubBot(threading.Thread):
 		self.Logs = LogModule(self.dBase, self.VkLib)
 		self.history = HistoryModule(self.VkLib)
 		self.reminderModule = ReminderModule(self.VkLib)
+		self.automemer = AutoMemer(self.VkLib)
 
 	def __exit__(self):
 		print('bye')
@@ -122,6 +124,7 @@ class SubBot(threading.Thread):
 							#pprint(json_event)
 							if peer_id == confID:
 								self.history.save_message(message_id, author_id, message_epoch_date, message_text)
+							self.automemer.check_message(peer_id, message_text)
 
 							is_for_me, message_text = self.check_is_for_me(message_text)
 							if not is_for_me:

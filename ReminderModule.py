@@ -94,7 +94,11 @@ class ReminderModule:
 
 		expiration_date, reminder_text = self.parse_reminder_command(reminder_raw)
 
-		print(expiration_date, reminder_text)
+		try:
+			datetime.strptime(expiration_date, "%Y-%m-%d %H:%M:%S")
+		except:
+			self.vk_handle.reply(peer_id, "Неправильный формат!")
+			return
 
 		response = (self.dbase.exc("SELECT MAX(id) FROM reminders"))[0]
 		if response[0] is not None:

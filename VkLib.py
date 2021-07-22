@@ -7,7 +7,8 @@ import vk_api
 import json
 from pprint import pprint
 from vk_api.bot_longpoll import VkBotLongPoll
-
+from vk_api import VkUpload
+from typing import List
 
 '''	
 class MyLongPoll(VkBotLongPoll):
@@ -39,15 +40,22 @@ class VkLib:
 	def __init__(self, token: str, group_id: int):
 		self.vk = vk_api.VkApi(token=token)
 		self.longpoll = VkBotLongPoll(self.vk, group_id)
+		self.vk_uploader = vk_api.VkUpload(self.vk)
 
-	def reply(self, peer_id: int, message: str, disable_mention: bool = True):
+	def reply(self, peer_id: int, message: str, attachments: List[str] = None, disable_mention: bool = True):
 		self.vk.method('messages.send', {'peer_id': peer_id,
 										 'message': message,
 										 'disable_mentions': 1 if disable_mention else 0,
-										 'random_id': random.randrange(999999)})
+										 'random_id': random.randrange(999999),
+										 'attachment': ','.join(attachments)})
 
-# This is not working at all, server error #10
-# but Ill leave that here just in case
+	def upload_pic_to_chat(self, peer_id, photo_path: str):
+		response = self.vk_uploader.photo_messages(photo_path, peer_id=peer_id)
+		attachment = "photo" + str(response[0]['owner_id']) + "_" + str(response[0]['id'])
+		return attachment
+
+	# This is not working at all, server error #10
+	# but Ill leave that here just in case
 	def reply_to_msg(self, peer_id: int, reply_to_id: int, message: str):
 		self.vk.method('messages.send', {'peer_id': peer_id,
 										 'message': message,
@@ -102,4 +110,3 @@ class VkLib:
 		#        chats = json_reply['items']
 		#        for chat in chats
 		#            print[]
-		pprint(json_reply)
