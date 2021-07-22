@@ -16,22 +16,23 @@ preheat_lines = [	"Время пришло ( ͡° ͜ʖ ͡°)",
 					"Нормальные люди спят в это время вообще-то",
 					"♪ ~Вкалывают роботы, а не человек~ ♪",
 					"Вскрываем ящик Пандоры...",
-					"Я здесь что б жвачку жевать и пидоров назначать, а жвачка у меня кончилась"	]
+					"Я здесь что б жвачку жевать и пидоров назначать, а жвачка у меня кончилась",
+					"Опять работать?" ]
 
 nomination_lines = [	"Герой-пидор сегодняшнего дня @{0}",
-					"Правом, данным мне свыше, объявляю пидором дня @{0}!",
-					"Ну и пидор же ты, @{0}",
-					"Кто это такой красивый у нас? @{0}!",
-					"У нас во дворе за такое убивают, @{0}",
-					"╰( ͡° ͜ʖ ͡° )つ──☆*:・ﾟ Вжух и ты пидор, @{0}!",
-					"@{0}, представитель вида faggot vulgaris",
-					"Отринь свою гетеросексуальность, @{0}!"	]
+						"Правом, данным мне свыше, объявляю пидором дня @{0}!",
+						"Ну и пидор же ты, @{0}",
+						"Кто это такой красивый у нас? @{0}!",
+						"У нас во дворе за такое убивают, @{0}",
+						"╰( ͡° ͜ʖ ͡° )つ──☆*:・ﾟ Вжух и ты пидор, @{0}!",
+						"@{0}, представитель вида faggot vulgaris",
+						"Отринь свою гетеросексуальность, @{0}!"	]
 
-countLines = [		"Минуточку, надо посчитать...",
-					"Так... этот один раз, тут два.. так падажжи ёмана",
-					"А ВОТ ОНИ",
-					"В э фильме снимались",
-					"Они сделали свой выбор" ]
+countLines = [	"Минуточку, надо посчитать...",
+				"Так... этот один раз, тут два.. так падажжи ёмана",
+				"А ВОТ ОНИ",
+				"В э фильме снимались",
+				"Они сделали свой выбор" ]
 
 
 class FagModule:
@@ -103,18 +104,18 @@ class FagModule:
 			self.vk_handle.reply(peer_id, "Кто-то вышел из чата, но остался в списке!")
 		'''
 
-		preheat_line = preheat_lines[random.randrange(0, len(preheat_lines))]
+		preheat_line = preheat_lines[random.randrange(0, len(preheat_lines)-1)]
 		self.vk_handle.reply(peer_id, preheat_line)
 		time.sleep(1)
 
 		players_list = self.get_all("fags_players")
 		random.shuffle(players_list)
-		today_fag = players_list[random.randrange(0, len(players_list))]
+		today_fag = players_list[random.randrange(0, len(players_list)-1)]
 		self.modify_fag_count_for(today_fag[0], 1)
 		self.set_param("LastFagTime", datetime.today().strftime("%Y-%m-%d"))
 		self.set_param("LastFagUser", today_fag[0])
 
-		nomination_line = nomination_lines[random.randrange(0, len(nomination_lines))]
+		nomination_line = nomination_lines[random.randrange(0, len(nomination_lines)-1)]
 		fag_reply = nomination_line.format(today_fag[1])
 		self.vk_handle.reply(peer_id, fag_reply)
 
@@ -125,8 +126,7 @@ class FagModule:
 			reply = "А не было у нас ещё пидоров! Хаха!"
 		else:
 			fags_list = dict(sorted(fags_list.items(), key=lambda x: x[1], reverse=True))		# I like your funny words, magic lambda man
-			print(fags_list)
-			self.vk_handle.reply(peer_id, countLines[random.randrange(0, len(countLines))] )
+			self.vk_handle.reply(peer_id, countLines[random.randrange(0, len(countLines)-1)] )
 			players_list = dict(self.get_all("fags_players"))
 			for fag in fags_list.keys():
 				fag_name: str
