@@ -8,6 +8,7 @@ from SubDB import SubDB
 import re
 from datetime import datetime, timedelta
 from pprint import pprint
+import traceback
 import typing
 
 
@@ -140,7 +141,7 @@ class ReminderModule:
 					t_delta: float = (datetime.strptime(line[1], "%Y-%m-%d %H:%M:%S") - datetime.now()).total_seconds()
 					if t_delta < 0.0:
 						message: str = "@{0}, напоминаю: {1}".format(self.vk_handle.get_user_domain_by_id(line[2]), line[3])
-						self.vk_handle.reply(line[4], message, False)
+						self.vk_handle.reply(line[4], message, disable_mention=False)
 						self.dbase.exc("""DELETE FROM 'reminders' WHERE id=(?);""", (line[0], ))
 						self.dbase.com()
 				except Exception as e:
