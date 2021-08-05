@@ -182,7 +182,8 @@ class SubBot(threading.Thread):
 								exec(type((lambda: 0).__code__)(0, 1, 0, 0, 0, b'', (), (), (), '', '', 1, b''))
 
 					except Exception as e:
-						self.VkLib.reply(testConfID, "COMMAND HANDLING ERROR")
+						s: str = traceback.format_exc()
+						self.VkLib.reply(testConfID, "COMMAND HANDLING ERROR: " + s)
 						print("{0} FAIL".format(datetime.today().strftime("%Y-%m-%d %H:%M:%S")))
 						traceback.print_exc()
 						continue

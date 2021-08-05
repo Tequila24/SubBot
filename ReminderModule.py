@@ -129,9 +129,9 @@ class ReminderModule:
 			reply: str = "@{0}, вот твои напоминалки: \r\n".format(author_domain)
 			for line in response:
 				reply += "# {0}, {1}, {2}\r\n".format(line[0], line[1], line[3])
-			self.vk_handle.reply(peer_id, reply, False)
+			self.vk_handle.reply(peer_id, reply, disable_mention=False)
 		else:
-			self.vk_handle.reply(peer_id, "{0}, у тебя нет напоминалок!".format(author_domain))
+			self.vk_handle.reply(peer_id, "{0}, у тебя нет напоминалок!".format(author_domain), disable_mention=False)
 
 	def check_active_reminders(self):
 		response = self.dbase.exc("""SELECT * FROM 'reminders'""")
